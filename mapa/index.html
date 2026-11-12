@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Escamas da Ruína — Mapa da Jornada</title>
+<style>
+:root{--bg:#f4efe3;--card:#fffdf7;--ink:#2a2418;--mut:#6b6250;--acc:#8a5a14;--line:#d9cfb6;--head:#efe3c2;--aqui:#d4a017;--vis:#2f7d4f;--men:#8a8a8a}
+@media (prefers-color-scheme:dark){:root{--bg:#14110d;--card:#201b14;--ink:#ece4d0;--mut:#a89f88;--acc:#e0a94a;--line:#40372a;--head:#33291a;--aqui:#f0c040;--vis:#52b87a;--men:#9a9a9a}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Georgia,'Times New Roman',serif;display:flex;flex-direction:column}
+header{padding:10px 14px;border-bottom:1px solid var(--line);background:var(--card)}
+h1{margin:0;font-size:1.15rem;color:var(--acc)}
+.sub{margin:2px 0 0;color:var(--mut);font-size:.85rem}
+.aqui{margin-top:6px;display:inline-block;background:var(--aqui);color:#2a2418;padding:3px 10px;border-radius:999px;font-size:.85rem;font-weight:bold}
+.tabs{display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--bg);flex-wrap:wrap;align-items:center}
+.tab,.tg{cursor:pointer;padding:5px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font:inherit;font-size:.85rem}
+.tab.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.tg.off{opacity:.45;text-decoration:line-through}
+.sp{flex:1}
+.wrap{flex:1;min-height:0;display:flex;position:relative}
+.view{flex:1;min-width:0;position:relative;overflow:hidden;background:#222;touch-action:none;cursor:grab}
+.view.drag{cursor:grabbing}
+#stage{position:absolute;left:0;top:0;transform-origin:0 0}
+#stage img{display:block;user-select:none;-webkit-user-drag:none;pointer-events:none}
+svg#rota{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.pin{position:absolute;transform:translate(-50%,-100%);cursor:pointer;display:flex;flex-direction:column;align-items:center}
+.pin .dot{width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 6px #0008;display:flex;align-items:center;justify-content:center}
+.pin .dot span{transform:rotate(45deg);font-size:15px;line-height:1}
+.pin.aqui .dot{background:var(--aqui);animation:pulso 1.6s infinite}
+.pin.visitado .dot{background:var(--vis)}
+.pin.mencionado .dot{background:var(--men);border-style:dashed}
+@keyframes pulso{0%{box-shadow:0 0 0 0 #f0c040aa}70%{box-shadow:0 0 0 18px #f0c04000}100%{box-shadow:0 0 0 0 #f0c04000}}
+.pin .lbl{margin-top:4px;background:#000b;color:#fff;font-size:12px;padding:1px 7px;border-radius:6px;white-space:nowrap;font-family:Georgia,serif}
+.pin .av{display:flex;margin-top:3px}
+.pin .av img{width:34px;height:34px;border-radius:50%;object-fit:cover;object-position:top;border:2px solid #fff;margin-left:-8px;box-shadow:0 1px 4px #0009;background:#444}
+.pin .av img:first-child{margin-left:0}
+.hide-npcs .pin .av{display:none}
+.hide-rumor .pin.rumor{display:none}
+.hide-rota svg#rota{display:none}
+.zoom{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px;z-index:3}
+.zoom button{width:38px;height:38px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:20px;cursor:pointer}
+.legend{position:absolute;left:10px;bottom:10px;background:#000a;color:#fff;font-size:12px;padding:6px 9px;border-radius:8px;z-index:3;line-height:1.6}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.panel{width:360px;max-width:100%;background:var(--card);border-left:1px solid var(--line);overflow-y:auto;padding:14px;display:none}
+.panel.on{display:block}
+.panel h2{margin:0 0 2px;font-size:1.2rem;color:var(--acc)}
+.badge{display:inline-block;font-size:.75rem;padding:1px 9px;border-radius:999px;color:#fff;margin-bottom:8px}
+.badge.aqui{background:var(--aqui);color:#2a2418}.badge.visitado{background:var(--vis)}.badge.mencionado{background:var(--men)}
+.panel h3{margin:14px 0 6px;font-size:.95rem;border-bottom:1px solid var(--line);padding-bottom:2px}
+.panel ul{margin:0;padding-left:18px}
+.npc{display:flex;gap:10px;margin:8px 0;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.npc img{width:64px;height:64px;border-radius:10px;object-fit:cover;object-position:top;flex:none;cursor:zoom-in}
+.npc b{display:block}.npc small{color:var(--mut)}
+.npc p{margin:3px 0 0;font-size:.85rem}
+.lmap{width:100%;border-radius:8px;border:1px solid var(--line);margin-top:6px;cursor:zoom-in}
+.x{float:right;cursor:pointer;border:0;background:transparent;color:var(--mut);font-size:22px;line-height:1}
+.list{display:none;flex:1;overflow-y:auto;padding:14px;max-width:820px;margin:0 auto;width:100%}
+.list.on{display:block}
+.sess{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 12px}
+.sess h3{margin:0 0 6px;color:var(--acc)}
+.sess ul{margin:0;padding-left:18px}
+.sess .go{margin-top:8px;cursor:pointer;border:1px solid var(--acc);background:transparent;color:var(--acc);border-radius:6px;padding:3px 10px;font:inherit;font-size:.85rem}
+.q li{margin:4px 0}
+.zi{position:fixed;inset:0;background:#000d;display:none;align-items:center;justify-content:center;z-index:20;cursor:zoom-out}
+.zi.on{display:flex}.zi img{max-width:94vw;max-height:94vh;border-radius:8px}
+@media (max-width:760px){
+  .panel{position:absolute;left:0;right:0;bottom:0;width:100%;max-height:62%;border-left:0;border-top:2px solid var(--acc);border-radius:14px 14px 0 0;z-index:4;box-shadow:0 -6px 20px #0006}
+  .legend{display:none}
+}
+</style></head><body>
+<header><h1>Escamas da Ruína — Mapa da Jornada</h1><p class="sub">Onde estamos, por onde passamos e o que já sabemos.</p><span class="aqui" id="aqui"></span></header>
+<div class="tabs">
+  <button class="tab on" data-v="mapa">Mapa</button><button class="tab" data-v="linha">Linha do tempo</button><button class="tab" data-v="duv">Dúvidas</button>
+  <span class="sp"></span>
+  <button class="tg" id="tgn" title="Retratos de NPCs">NPCs</button><button class="tg" id="tgr" title="Rota percorrida">Rota</button><button class="tg" id="tgu" title="Rumores e pistas">Rumores</button>
+</div>
+<div class="wrap">
+  <div class="view" id="view"><div id="stage"></div>
+    <div class="legend"><i style="background:var(--aqui)"></i>Estamos aqui<br><i style="background:var(--vis)"></i>Já passamos<br><i style="background:var(--men)"></i>Ainda não fomos<br><span style="color:#6fb0ff">- - -</span> navio · <span style="color:#e08a5a">&#9473; &#9473;</span> a pé</div>
+    <div class="zoom"><button id="zin">+</button><button id="zout">&minus;</button><button id="zfit" title="Ajustar">&#9974;</button></div>
+  </div>
+  <aside class="panel" id="panel"></aside>
+</div>
+<div class="list" id="linha"></div><div class="list" id="duv"></div>
+<div class="zi" id="zi"><img alt=""></div>
+<script type="application/json" id="dados">{"titulo":"Escamas da Ruína — Mapa da Jornada","subtitulo":"Onde estamos, por onde passamos e o que já sabemos.","base":"https://raw.githubusercontent.com/augustolenzi/campanha-5e-assets/main/","mapa":{"imagem":"mapas/costa-da-espada.jpg","largura":1600,"altura":2190},"estamosEm":"redwood-watch","sessaoAtual":2,"nivel":2,"lugares":[{"id":"neverwinter","nome":"Neverwinter","tipo":"cidade","estado":"visitado","x":21.8,"y":48.2,"sessoes":[1],"resumo":"Onde a jornada começou. A cidade da rua de Eldemere e da taverna Cinthya Taberna e Dormitórios.","mapaLocal":"mapas/Neverwinter_cityscape.webp","npcs":["eldemere"],"sabemos":["Uma mulher com uma cesta coberta nos entregou o Ovo de Latão e contou a história dos dragões.","Uma ladra jogou a cesta, e o ladrão da cesta correu direto para nós.","Laerorndaer lançou um feitiço de sono: Rickson e o ladrão caíram dormindo, abraçados.","Rickson tocou berimbau de olhos fechados e atraiu cerca de 30 pessoas num ritmo de maracatu.","Dormimos na Cinthya Taberna e Dormitórios, e o grupo teve o mesmo sonho (veja Redwood Grove).","Perosvaldo sentiu um cheiro de pavor extremo vindo de uma figura encapuzada, com escamas azuis sob a capa."]},{"id":"figura-encapuzada","nome":"Figura encapuzada","tipo":"rumor","estado":"mencionado","x":17.5,"y":53,"sessoes":[1],"resumo":"Perosvaldo sentiu pavor ao farejar uma figura de capa cobrindo tudo. Vimos escamas azuis.","npcs":[],"sabemos":["Ainda não sabemos quem é, nem o que quer."]},{"id":"fuga-eldemere","nome":"Para onde Eldemere fugiu","tipo":"rumor","estado":"mencionado","x":21,"y":63,"sessoes":[1],"resumo":"Eldemere seguiu em fuga para o sul de Neverwinter. Perosvaldo a acompanhou até perto de uma fenda infernal.","npcs":["eldemere"],"sabemos":["Eldemere se esconde. Ela teme que o dragão azul Anthradusk a procure."]},{"id":"port-llast","nome":"Port Llast","tipo":"cidade","estado":"visitado","x":8.4,"y":15,"aproximado":true,"sessoes":[2],"resumo":"Porto onde o navio de Neverwinter nos deixou. De lá seguimos por terra. O mapa não mostra a cidade: posição aproximada.","npcs":[],"sabemos":["O grupo decidiu ir de navio a Port Llast."]},{"id":"redwood-watch","nome":"Redwood Watch","tipo":"aldeia","estado":"aqui","x":27.5,"y":14.2,"aproximado":true,"sessoes":[2],"resumo":"Aldeia élfica no Neverwinter Wood. O conselho pediu ajuda: as árvores adoecem e aldeões sumiram. Posição aproximada.","mapaLocal":"mapas/vila-generica.jpg","npcs":["selenar","gwenhumara","fergus","sunny"],"sabemos":["O conselho (Selenar e Gwenhumara) nos pediu ajuda: as árvores do bosque adoecem e aldeões desapareceram, entre eles o conselheiro Armin.","Xu se apresentou como \"Death at Sunset\". Selenar ficou furioso. Gwenhumara o apaziguou depois.","Conseguimos descontos com Sunny Lightpurse.","Fergus serve comida simples na Village Green."]},{"id":"redwood-grove","nome":"Redwood Grove","tipo":"floresta","estado":"visitado","x":34.5,"y":20.5,"aproximado":true,"sessoes":[2],"resumo":"O bosque de sequoias plantado há séculos por seis famílias élficas. Colhemos todas as amostras de casca no mesmo dia da chegada. Posição aproximada.","mapaLocal":"mapas/redwood-grove-jogador.jpg","npcs":["kaynen"],"sabemos":["No sonho do Ovo, descobrimos que Sunset-Is-Nigh é filha da dragoa falecida, Death-at-Sunset.","Kaynen, o guardião do bosque, concordou em nos ajudar.","Colhemos todas as amostras de casca. Agora estamos no nível 2."]},{"id":"toca","nome":"A toca de Death-at-Sunset","tipo":"toca","estado":"mencionado","x":38.5,"y":25.5,"aproximado":true,"sessoes":[2],"resumo":"Sob as raízes do bosque. Há cem anos os elfos mataram a dragoa que vivia ali. Ainda não entramos.","mapaLocal":"mapas/toca-death-at-sunset-jogador.jpg","npcs":[],"sabemos":["A dragoa Death-at-Sunset foi morta pelos elfos há cem anos.","O filhote dela, Sunset-Is-Nigh, é o centro do mal que adoece o bosque."]}],"rota":[{"tipo":"navio","de":"neverwinter","para":"port-llast","sessao":2,"pontos":[[21.8,48.2],[16,42],[11,32],[7,21],[6.5,16.5],[8.4,15]]},{"tipo":"terra","de":"port-llast","para":"redwood-watch","sessao":2,"pontos":[[8.4,15],[15,14.8],[21.5,14.4],[27.5,14.2]]},{"tipo":"terra","de":"redwood-watch","para":"redwood-grove","sessao":2,"pontos":[[27.5,14.2],[31,17.2],[34.5,20.5]]}],"npcs":{"eldemere":{"nome":"Eldemere","imagem":"personagens/sessao-01/npc-eldemere.jpeg","papel":"Maga, discípula de Cozmioko","bio":"Maga humana, alta, de cabelo castanho-areia e olhos dourados, em túnica amarela fina. Erudita, calma e precisa. Foi discípula do dragão de latão Cozmioko e nos entregou o Ovo de Latão, o último presente dele. Está em fuga."},"selenar":{"nome":"Selenar Woodwise","imagem":"personagens/sessao-01/npc-selenar-woodwise.jpeg","papel":"Conselheiro de Redwood Watch","bio":"Elfo da floresta de porte nobre, com peitoral de aço e capa verde. Firme, teimoso e orgulhoso de ter sido herói. Ficou furioso quando Xu se apresentou como Death at Sunset."},"gwenhumara":{"nome":"Gwenhumara Goldmoss","imagem":"personagens/sessao-01/npc-gwenhumara-goldmoss.jpeg","papel":"Conselheira e curandeira","bio":"Elfa gentil e ansiosa, em túnicas verdes. Cuida dos feridos e pede ajuda para achar os desaparecidos. Apaziguou Selenar depois do episódio com Xu."},"fergus":{"nome":"Fergus Deerborn","imagem":"personagens/sessao-01/npc-fergus-deerborn.jpeg","papel":"Dono do Fergus's Grill","bio":"Cozinheiro élfico, elegante e sempre em movimento, na Village Green. Serve pratos simples de cogumelos, frutas vermelhas, coelho e veado por pequena doação."},"sunny":{"nome":"Sunny Lightpurse","imagem":"personagens/sessao-01/npc-sunny-lightpurse.jpeg","papel":"Mercadora halfling","bio":"Mercadora viajante de cabelo dourado e sorriso permanente, com uma carroça cheia e dois cavalos, Buttercup e Daisy. Vende de tudo um pouco. Nos deu descontos."},"kaynen":{"nome":"Kaynen","imagem":"personagens/sessao-01/npc-kaynen.jpeg","papel":"Dríade guardião de Redwood Grove","bio":"Dríade de pele verde e cabelo de folhas, sentado numa folha de fungo como num trono. Vigia a árvore onde mora. Desconfia de estranhos, mas aceitou nos ajudar."}},"linhaDoTempo":[{"sessao":1,"titulo":"O Ovo e a Floresta (Neverwinter)","lugar":"neverwinter","eventos":["Uma cesta coberta e o Ovo de Latão.","A ladra, o sono de Laerorndaer e o maracatu de Rickson.","Eldemere conta a história dos dragões e foge.","O sonho compartilhado: Sunset-Is-Nigh é filha de Death-at-Sunset.","Decisão: ir de navio a Port Llast."]},{"sessao":2,"titulo":"Redwood Watch","lugar":"redwood-watch","eventos":["Chegada a Port Llast e caminhada até Redwood Watch.","O conselho: Xu se apresenta como Death at Sunset e Selenar fica furioso.","Descontos com Sunny, comida com Fergus.","Kaynen concorda em ajudar. Todas as amostras colhidas no mesmo dia.","O grupo sobe para o nível 2."]}],"duvidas":["Quem é a figura encapuzada de escamas azuis, e o que ela quer?","Para onde Eldemere fugiu, e do que ela tem medo?","O que mais o Ovo de Latão pode fazer? Ele parece ligar nossas mentes.","O que Laerorndaer sentiu em Neverwinter?","Onde estão Armin e os outros aldeões desaparecidos?","Qual o poder de Sunset-Is-Nigh, e como derrotá-lo?"]}</script>
+<script>
+(function(){
+  var D=JSON.parse(document.getElementById('dados').textContent);
+  var BASE=D.base,IW=D.mapa.largura,IH=D.mapa.altura;
+  var $=function(s){return document.querySelector(s)};
+  var view=$('#view'),stage=$('#stage'),panel=$('#panel');
+  var lugares={};D.lugares.forEach(function(l){lugares[l.id]=l});
+  var icon={cidade:'\u{1F3F0}',aldeia:'\u{1F3D8}',floresta:'\u{1F332}',toca:'\u{1F409}',rumor:'?'};
+  var estLbl={aqui:'Estamos aqui',visitado:'Já passamos',mencionado:'Ainda não fomos'};
+  function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e}
+  function esc(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+
+  // ---- cabecalho
+  var ae=lugares[D.estamosEm];
+  $('#aqui').textContent='Estamos em: '+(ae?ae.nome:'?')+' · Sessão '+D.sessaoAtual+' · Nível '+D.nivel;
+
+  // ---- palco
+  var img=new Image();img.src=BASE+D.mapa.imagem;img.width=IW;img.height=IH;img.alt='Mapa da região';
+  stage.style.width=IW+'px';stage.style.height=IH+'px';stage.appendChild(img);
+
+  // rota (SVG em coordenadas da imagem)
+  var NS='http://www.w3.org/2000/svg',svg=document.createElementNS(NS,'svg');svg.setAttribute('id','rota');svg.setAttribute('viewBox','0 0 '+IW+' '+IH);
+  D.rota.forEach(function(r){
+    var pl=document.createElementNS(NS,'polyline');
+    pl.setAttribute('points',r.pontos.map(function(p){return (p[0]*IW/100)+','+(p[1]*IH/100)}).join(' '));
+    pl.setAttribute('fill','none');pl.setAttribute('stroke',r.tipo==='navio'?'#1d6fb8':'#a8421a');
+    pl.setAttribute('stroke-width','12');pl.setAttribute('stroke-linecap','round');pl.setAttribute('stroke-linejoin','round');
+    pl.setAttribute('stroke-dasharray',r.tipo==='navio'?'6 22':'26 16');pl.setAttribute('opacity','.9');
+    svg.appendChild(pl);
+  });
+  stage.appendChild(svg);
+
+  // pinos
+  D.lugares.forEach(function(l){
+    var p=el('div','pin '+l.estado+(l.tipo==='rumor'?' rumor':''));p.style.left=(l.x*IW/100)+'px';p.style.top=(l.y*IH/100)+'px';
+    p.dataset.id=l.id;
+    p.appendChild(el('div','dot','<span>'+(icon[l.tipo]||'\u2022')+'</span>'));
+    p.appendChild(el('div','lbl',esc(l.nome)));
+    if(l.npcs&&l.npcs.length){var av=el('div','av');l.npcs.slice(0,4).forEach(function(n){var d=D.npcs[n];if(!d)return;var i=new Image();i.src=BASE+d.imagem;i.alt=d.nome;i.loading='lazy';av.appendChild(i)});p.appendChild(av)}
+    p.addEventListener('click',function(e){e.stopPropagation();abrir(l.id)});
+    p.addEventListener('pointerdown',function(e){e.stopPropagation()});
+    stage.appendChild(p);
+  });
+
+  // ---- pan / zoom
+  var s=1,tx=0,ty=0,minS=0.1;
+  function apply(){stage.style.transform='translate('+tx+'px,'+ty+'px) scale('+s+')';var k=1/Math.max(s,.35);document.querySelectorAll('.pin').forEach(function(p){p.style.transform='translate(-50%,-100%) scale('+Math.min(k,1.5)+')';p.style.transformOrigin='50% 100%'})}
+  function clamp(){var vw=view.clientWidth,vh=view.clientHeight;var w=IW*s,h=IH*s;
+    tx=w<=vw?(vw-w)/2:Math.min(0,Math.max(vw-w,tx));ty=h<=vh?(vh-h)/2:Math.min(0,Math.max(vh-h,ty))}
+  function fit(){var vw=view.clientWidth,vh=view.clientHeight;minS=Math.min(vw/IW,vh/IH);s=Math.max(minS,vw/IW);tx=0;ty=0;clamp();apply()}
+  function zoomAt(f,cx,cy){var ns=Math.min(2.2,Math.max(minS,s*f));var r=ns/s;tx=cx-(cx-tx)*r;ty=cy-(cy-ty)*r;s=ns;clamp();apply()}
+  function foco(id){var l=lugares[id];if(!l)return;var vw=view.clientWidth,vh=view.clientHeight;s=Math.max(s,0.9);
+    tx=vw/2-(l.x*IW/100)*s;ty=(window.innerWidth<=760?vh*0.22:vh/2-40)-(l.y*IH/100)*s;clamp();apply()}
+  var pts={},last=0,dist0=0,drag=false,sx,sy,stx,sty,moved=false;
+  view.addEventListener('pointerdown',function(e){view.setPointerCapture(e.pointerId);pts[e.pointerId]=e;moved=false;
+    if(Object.keys(pts).length===1){drag=true;sx=e.clientX;sy=e.clientY;stx=tx;sty=ty;view.classList.add('drag')}
+    else{var a=Object.values(pts);dist0=Math.hypot(a[0].clientX-a[1].clientX,a[0].clientY-a[1].clientY)}});
+  view.addEventListener('pointermove',function(e){if(!pts[e.pointerId])return;pts[e.pointerId]=e;var a=Object.values(pts);
+    if(a.length>=2){var d=Math.hypot(a[0].clientX-a[1].clientX,a[0].clientY-a[1].clientY);var rc=view.getBoundingClientRect();
+      zoomAt(d/dist0,(a[0].clientX+a[1].clientX)/2-rc.left,(a[0].clientY+a[1].clientY)/2-rc.top);dist0=d;moved=true}
+    else if(drag){var dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>3)moved=true;tx=stx+dx;ty=sty+dy;clamp();apply()}});
+  function up(e){delete pts[e.pointerId];if(!Object.keys(pts).length){drag=false;view.classList.remove('drag')}}
+  view.addEventListener('pointerup',up);view.addEventListener('pointercancel',up);
+  view.addEventListener('wheel',function(e){e.preventDefault();var rc=view.getBoundingClientRect();zoomAt(e.deltaY<0?1.15:1/1.15,e.clientX-rc.left,e.clientY-rc.top)},{passive:false});
+  view.addEventListener('click',function(){if(!moved)fechar()});
+  $('#zin').onclick=function(){zoomAt(1.3,view.clientWidth/2,view.clientHeight/2)};
+  $('#zout').onclick=function(){zoomAt(1/1.3,view.clientWidth/2,view.clientHeight/2)};
+  $('#zfit').onclick=fit;
+  window.addEventListener('resize',function(){clamp();apply()});
+
+  // ---- painel
+  function zoomImg(src){var z=$('#zi');z.querySelector('img').src=src;z.classList.add('on')}
+  $('#zi').onclick=function(){this.classList.remove('on')};
+  function abrir(id){var l=lugares[id];if(!l)return;
+    var h='<button class="x" title="Fechar">\u00D7</button><h2>'+esc(l.nome)+'</h2><span class="badge '+l.estado+'">'+estLbl[l.estado]+'</span>';
+    if(l.aproximado)h+=' <span class="badge mencionado">posição aproximada</span>';
+    h+='<p>'+esc(l.resumo)+'</p>';
+    if(l.sabemos&&l.sabemos.length){h+='<h3>O que sabemos</h3><ul>'+l.sabemos.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>'}
+    if(l.npcs&&l.npcs.length){h+='<h3>Quem conhecemos aqui</h3>'+l.npcs.map(function(n){var d=D.npcs[n];if(!d)return '';
+      return '<div class="npc"><img src="'+BASE+d.imagem+'" data-z="'+BASE+d.imagem+'" alt=""><div><b>'+esc(d.nome)+'</b><small>'+esc(d.papel)+'</small><p>'+esc(d.bio)+'</p></div></div>'}).join('')}
+    if(l.mapaLocal){h+='<h3>Mapa do lugar</h3><img class="lmap" data-z="'+BASE+l.mapaLocal+'" src="'+BASE+l.mapaLocal+'" loading="lazy" alt="Mapa de '+esc(l.nome)+'">'}
+    panel.innerHTML=h;panel.classList.add('on');panel.scrollTop=0;
+    panel.querySelector('.x').onclick=fechar;
+    panel.querySelectorAll('[data-z]').forEach(function(i){i.onclick=function(){zoomImg(i.dataset.z)}});
+    foco(id);
+  }
+  function fechar(){panel.classList.remove('on')}
+
+  // ---- abas
+  var tabs=document.querySelectorAll('.tab');
+  tabs.forEach(function(t){t.onclick=function(){tabs.forEach(function(x){x.classList.remove('on')});t.classList.add('on');
+    var w=t.dataset.v;$('.wrap').style.display=w==='mapa'?'flex':'none';$('#linha').classList.toggle('on',w==='linha');$('#duv').classList.toggle('on',w==='duv');
+    if(w==='mapa'){setTimeout(function(){clamp();apply()},0)}}});
+  // toggles
+  function tg(id,cls){var b=$(id);b.onclick=function(){b.classList.toggle('off');$('#view').classList.toggle(cls,b.classList.contains('off'))}}
+  tg('#tgn','hide-npcs');tg('#tgr','hide-rota');tg('#tgu','hide-rumor');
+
+  // ---- linha do tempo
+  $('#linha').innerHTML=D.linhaDoTempo.slice().reverse().map(function(s){
+    return '<div class="sess"><h3>Sessão '+s.sessao+' · '+esc(s.titulo)+'</h3><ul>'+s.eventos.map(function(e){return '<li>'+esc(e)+'</li>'}).join('')+'</ul>'+
+      (s.lugar?'<button class="go" data-l="'+s.lugar+'">Ver no mapa</button>':'')+'</div>'}).join('');
+  document.querySelectorAll('.go').forEach(function(b){b.onclick=function(){document.querySelector('.tab[data-v=mapa]').click();setTimeout(function(){abrir(b.dataset.l)},30)}});
+  $('#duv').innerHTML='<div class="sess q"><h3>O que ainda não sabemos</h3><ul>'+D.duvidas.map(function(q){return '<li>'+esc(q)+'</li>'}).join('')+'</ul></div>';
+
+  img.onload=function(){fit()};if(img.complete)fit();
+})();
+</script>
+</body></html>
