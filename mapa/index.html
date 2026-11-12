@@ -37,8 +37,6 @@ svg#rota{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:no
 .pin.in-cl{display:none}
 .fanc{position:absolute;width:16px;height:16px;border-radius:50%;border:3px solid #fff;background:#d4a017;box-shadow:0 0 0 3px #0006;pointer-events:none}
 .pin.fan{z-index:3}
-.bnr{margin-top:6px;font-size:.8rem;background:var(--head);border:1px solid var(--acc);border-radius:6px;padding:3px 9px;display:inline-block}
-.bnr a{color:var(--acc)}
 .pin.cl .dot span{font-weight:bold;font-size:14px;font-family:Georgia,serif;color:#fff}
 .pin.cl.aqui .dot span{color:#2a2418}
 .hide-rumor .pin.rumor{display:none}
@@ -131,7 +129,6 @@ body.editar .pin .lbl::after{content:' *';color:#ffd54a}
     var de=lugares[r.de],pa=lugares[r.para];if(de){p[0]=[de.x,de.y]}if(pa){p[p.length-1]=[pa.x,pa.y]}
     r.pontos=p;pl.setAttribute('points',p.map(function(q){return (q[0]*IW/100)+','+(q[1]*IH/100)}).join(' '))})}
   var TEMPOS=0;try{var sv=JSON.parse(localStorage.getItem('mapaPos')||'{}');Object.keys(sv).forEach(function(id){if(lugares[id]&&(lugares[id].x!==sv[id][0]||lugares[id].y!==sv[id][1])){lugares[id].x=sv[id][0];lugares[id].y=sv[id][1];TEMPOS++}})}catch(e){}if(TEMPOS||EDIT)updRota();
-  if(TEMPOS&&!EDIT){var bn=el('div','bnr','Posições editadas, só neste navegador. <a href="?editar">Editar</a> · <a href="#" id="bnl">Voltar ao original</a>');document.querySelector('header').appendChild(bn);document.getElementById('bnl').onclick=function(e){e.preventDefault();try{localStorage.removeItem('mapaPos')}catch(x){}location.reload()}}
 
   // pinos
   D.lugares.forEach(function(l){
