@@ -13,6 +13,10 @@ h1{margin:0;font-size:1.7rem;color:var(--acc)}
 .bar .in{max-width:980px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 #q{flex:1 1 220px;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font-size:16px}
 .chip{cursor:pointer;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font:inherit;font-size:.9rem}
+.acoes{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.alb{color:var(--mut);font-size:.85rem}
+.acao{cursor:pointer;padding:5px 12px;border:1px solid var(--acc);border-radius:6px;background:transparent;color:var(--acc);font:inherit;font-size:.85rem}
+.acao:hover{background:var(--head)}
 .chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
 main{max-width:980px;margin:0 auto;padding:4px 16px 60px}
 .grp{margin:30px 0 8px;font-size:1.25rem;border-bottom:2px solid var(--acc);padding-bottom:4px;display:flex;flex-direction:column}
@@ -39,7 +43,7 @@ footer{max-width:980px;margin:0 auto;padding:0 16px 30px;color:var(--mut);font-s
 </style></head><body>
 <header><h1>Tabelas de Preços</h1>
 <p class="sub">Crônicas da Terra Esquecida · valores em PO, PP e PC (1 PO = 10 PP = 100 PC). Preços de referência; o comerciante pode variar.</p></header>
-<div class="bar"><div class="in"><input id="q" type="search" placeholder="Buscar (ex.: corda, espada, poção, rope)…" autocomplete="off"><button class="chip on" data-g="all">Tudo</button><button class="chip" data-g="uteis">Mais úteis</button><button class="chip" data-g="itens">Itens e consumíveis</button><button class="chip" data-g="magicos">Itens mágicos</button><button class="chip" data-g="especificas">Mais específicas</button><button class="chip" id="rec">Recolher tudo</button><button class="chip" id="exp">Expandir tudo</button></div></div>
+<div class="bar"><div class="in"><input id="q" type="search" placeholder="Buscar (ex.: corda, espada, poção, rope)…" autocomplete="off"><button class="chip on" data-g="all">Tudo</button><button class="chip" data-g="uteis">Mais úteis</button><button class="chip" data-g="itens">Itens e consumíveis</button><button class="chip" data-g="magicos">Itens mágicos</button><button class="chip" data-g="especificas">Mais específicas</button></div><div class="in acoes"><span class="alb">Tabelas:</span><button class="acao" id="rec" title="Fechar todas as tabelas">&#9652; Recolher tudo</button><button class="acao" id="exp" title="Abrir todas as tabelas">&#9662; Expandir tudo</button></div></div>
 <main>
 <h2 class="grp" data-g="uteis">Mais úteis<small>Dinheiro, estadia, viagem, equipamento e armas.</small></h2>
 <details class="card" id="moedas-1" data-g="uteis" open><summary><span class="t">Moedas</span><span class="cnt">4</span><button class="cp" title="Copiar para o Roll20">Copiar</button></summary><div class="scroll"><table><thead><tr><th>Moeda</th><th>Equivale a</th><th class="n">Em PO</th></tr></thead><tbody><tr><td>Peça de cobre (PC)</td><td>10 PC = 1 PP</td><td class="n">0,01</td></tr><tr><td>Peça de prata (PP)</td><td>10 PP = 1 PO</td><td class="n">0,1</td></tr><tr><td>Peça de ouro (PO)</td><td>referência</td><td class="n">1</td></tr><tr><td>Peça de platina (PL)</td><td>1 PL = 10 PO</td><td class="n">10</td></tr></tbody></table></div></details>
