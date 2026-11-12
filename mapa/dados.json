@@ -31,7 +31,7 @@
         "Uma ladra jogou a cesta, e o ladrão da cesta correu direto para nós.",
         "Laerorndaer lançou um feitiço de sono: Rickson e o ladrão caíram dormindo, abraçados.",
         "Rickson tocou berimbau de olhos fechados e atraiu cerca de 30 pessoas num ritmo de maracatu.",
-        "Dormimos na Cinthya Taberna e Dormitórios, e o grupo teve o mesmo sonho (veja Redwood Grove).",
+        "Dormimos na Cinthya Taberna e Dormitórios, e o grupo teve o mesmo sonho.",
         "Perosvaldo sentiu um cheiro de pavor extremo vindo de uma figura encapuzada, com escamas azuis sob a capa."
       ]
     },
@@ -46,7 +46,9 @@
         1
       ],
       "resumo": "Perosvaldo sentiu pavor ao farejar uma figura de capa cobrindo tudo. Vimos escamas azuis.",
-      "npcs": [],
+      "npcs": [
+        "encapuzado"
+      ],
       "sabemos": [
         "Ainda não sabemos quem é, nem o que quer."
       ]
@@ -129,9 +131,8 @@
         "kaynen"
       ],
       "sabemos": [
-        "No sonho do Ovo, descobrimos que Sunset-Is-Nigh é filha da dragoa falecida, Death-at-Sunset.",
         "Kaynen, o guardião do bosque, concordou em nos ajudar.",
-        "Colhemos todas as amostras de casca. Agora estamos no nível 2."
+        "Colhemos todas as amostras de casca. Ficamos mais fortes!"
       ]
     },
     {
@@ -145,11 +146,10 @@
       "sessoes": [
         2
       ],
-      "resumo": "O lugar ligado à dragoa Death-at-Sunset, morta pelos elfos há cem anos. Ainda não sabemos onde fica nem entramos.",
+      "resumo": "O lugar ligado à dragoa Death-at-Sunset. Ainda não sabemos onde fica nem entramos.",
       "npcs": [],
       "sabemos": [
-        "A dragoa Death-at-Sunset foi morta pelos elfos há cem anos.",
-        "Sunset-Is-Nigh é filha dela."
+        "Os elfos de Redwood Watch têm uma história antiga com a dragoa Death-at-Sunset."
       ]
     }
   ],
@@ -267,6 +267,12 @@
       "imagem": "personagens/sessao-01/npc-kaynen.jpeg",
       "papel": "Dríade guardião de Redwood Grove",
       "bio": "Dríade de pele verde e cabelo de folhas, sentado numa folha de fungo como num trono. Vigia a árvore onde mora. Desconfia de estranhos, mas aceitou nos ajudar."
+    },
+    "encapuzado": {
+      "nome": "Figura encapuzada",
+      "imagem": "personagens/antagonistas/enviado-de-anthradusk.jpeg",
+      "papel": "Desconhecido",
+      "bio": "Alta, de capa pesada de escamas azuis que cobre tudo, com o rosto sempre na sombra do capuz. Perosvaldo sentiu pavor extremo no cheiro dela."
     }
   },
   "linhaDoTempo": [
@@ -278,7 +284,7 @@
         "Uma cesta coberta e o Ovo de Latão.",
         "A ladra, o sono de Laerorndaer e o maracatu de Rickson.",
         "Eldemere conta a história dos dragões e foge.",
-        "O sonho compartilhado: Sunset-Is-Nigh é filha de Death-at-Sunset.",
+        "O sonho compartilhado perto do Ovo.",
         "Decisão: ir de navio a Port Llast."
       ]
     },
@@ -291,7 +297,7 @@
         "O conselho: Xu se apresenta como Death at Sunset e Selenar fica furioso.",
         "Descontos com Sunny, comida com Fergus.",
         "Kaynen concorda em ajudar. Todas as amostras colhidas no mesmo dia.",
-        "O grupo sobe para o nível 2."
+        "Ficamos mais fortes!"
       ]
     }
   ],
@@ -301,6 +307,6 @@
     "O que mais o Ovo de Latão pode fazer? Ele parece ligar nossas mentes.",
     "O que Laerorndaer sentiu em Neverwinter?",
     "Onde estão Armin e os outros aldeões desaparecidos?",
-    "Qual o poder de Sunset-Is-Nigh, e como derrotá-lo?"
+    "Quem é Sunset-Is-Nigh, e qual a ligação com a dragoa Death-at-Sunset?"
   ]
 }
