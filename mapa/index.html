@@ -60,6 +60,11 @@ svg#rota{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:no
 .sess ul{margin:0;padding-left:18px}
 .sess .go{margin-top:8px;cursor:pointer;border:1px solid var(--acc);background:transparent;color:var(--acc);border-radius:6px;padding:3px 10px;font:inherit;font-size:.85rem}
 .q li{margin:4px 0}
+#ed{position:absolute;left:10px;top:10px;z-index:6;background:var(--card);border:2px solid var(--acc);border-radius:10px;padding:8px 10px;width:300px;max-width:calc(100% - 20px);font-size:13px;box-shadow:0 4px 14px #0007}
+#ed textarea{width:100%;font:11px monospace;margin:6px 0;background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+#ed button{cursor:pointer;padding:4px 10px;border:1px solid var(--acc);background:transparent;color:var(--acc);border-radius:6px;font:inherit}
+body.editar .pin{cursor:move}
+body.editar .pin .lbl::after{content:' *';color:#ffd54a}
 .zi{position:fixed;inset:0;background:#000d;display:none;align-items:center;justify-content:center;z-index:20;cursor:zoom-out}
 .zi.on{display:flex}.zi img{max-width:94vw;max-height:94vh;border-radius:8px}
 @media (max-width:760px){
@@ -104,16 +109,21 @@ svg#rota{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:no
   stage.style.width=IW+'px';stage.style.height=IH+'px';stage.appendChild(img);
 
   // rota (SVG em coordenadas da imagem)
-  var NS='http://www.w3.org/2000/svg',svg=document.createElementNS(NS,'svg');svg.setAttribute('id','rota');svg.setAttribute('viewBox','0 0 '+IW+' '+IH);
+  var pls=[];var NS='http://www.w3.org/2000/svg',svg=document.createElementNS(NS,'svg');svg.setAttribute('id','rota');svg.setAttribute('viewBox','0 0 '+IW+' '+IH);
   D.rota.forEach(function(r){
     var pl=document.createElementNS(NS,'polyline');
     pl.setAttribute('points',r.pontos.map(function(p){return (p[0]*IW/100)+','+(p[1]*IH/100)}).join(' '));
     pl.setAttribute('fill','none');pl.setAttribute('stroke',r.tipo==='navio'?'#1d6fb8':'#a8421a');
     pl.setAttribute('stroke-width','12');pl.setAttribute('stroke-linecap','round');pl.setAttribute('stroke-linejoin','round');
     pl.setAttribute('stroke-dasharray',r.tipo==='navio'?'6 22':'26 16');pl.setAttribute('opacity','.9');
-    svg.appendChild(pl);
+    svg.appendChild(pl);pls.push([pl,r]);
   });
   stage.appendChild(svg);
+  var EDIT=/[?&]editar/.test(location.search);
+  function updRota(){pls.forEach(function(a){var pl=a[0],r=a[1],p=r.pontos.map(function(q){return q.slice()});
+    var de=lugares[r.de],pa=lugares[r.para];if(de){p[0]=[de.x,de.y]}if(pa){p[p.length-1]=[pa.x,pa.y]}
+    r.pontos=p;pl.setAttribute('points',p.map(function(q){return (q[0]*IW/100)+','+(q[1]*IH/100)}).join(' '))})}
+  if(EDIT){try{var sv=JSON.parse(localStorage.getItem('mapaPos')||'{}');Object.keys(sv).forEach(function(id){if(lugares[id]){lugares[id].x=sv[id][0];lugares[id].y=sv[id][1]}})}catch(e){}updRota()}
 
   // pinos
   D.lugares.forEach(function(l){
@@ -122,11 +132,29 @@ svg#rota{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:no
     p.appendChild(el('div','dot','<span>'+(icon[l.tipo]||'\u2022')+'</span>'));
     p.appendChild(el('div','lbl',esc(l.nome)));
     if(l.npcs&&l.npcs.length){var av=el('div','av');l.npcs.slice(0,4).forEach(function(n){var d=D.npcs[n];if(!d)return;var i=new Image();i.src=BASE+d.imagem;i.alt=d.nome;i.loading='lazy';av.appendChild(i)});p.appendChild(av)}
-    p.addEventListener('click',function(e){e.stopPropagation();abrir(l.id)});
-    p.addEventListener('pointerdown',function(e){e.stopPropagation()});
+    p.addEventListener('click',function(e){e.stopPropagation();if(EDIT)return;abrir(l.id)});
+    p.addEventListener('pointerdown',function(e){e.stopPropagation();
+      if(!EDIT)return;e.preventDefault();try{p.setPointerCapture(e.pointerId)}catch(err){}p.dataset.dr='1';moved=true});
+    p.addEventListener('pointermove',function(e){if(!EDIT||p.dataset.dr!=='1')return;var rc=view.getBoundingClientRect();
+      var x=((e.clientX-rc.left-tx)/s)/IW*100,y=((e.clientY-rc.top-ty)/s)/IH*100;x=Math.max(0,Math.min(100,x));y=Math.max(0,Math.min(100,y));
+      l.x=+x.toFixed(2);l.y=+y.toFixed(2);p.style.left=(l.x*IW/100)+'px';p.style.top=(l.y*IH/100)+'px';updRota();saida()});
+    p.addEventListener('pointerup',function(e){if(!EDIT)return;p.dataset.dr='0';salvar()});
     stage.appendChild(p);
   });
 
+  // ---- editor de posicoes (?editar)
+  function pos(){var o={};D.lugares.forEach(function(l){o[l.id]=[l.x,l.y]});return o}
+  function salvar(){try{localStorage.setItem('mapaPos',JSON.stringify(pos()))}catch(e){}}
+  var saida=function(){};
+  if(EDIT){document.body.classList.add('editar');
+    var ed=document.createElement('div');ed.id='ed';
+    ed.innerHTML='<b>Modo editar</b><br>Arraste os pinos para o lugar certo. Depois toque em <b>Copiar posições</b> e cole no chat.<br><textarea id="edt" readonly rows="6"></textarea><br><button id="edc">Copiar posições</button> <button id="edr">Desfazer tudo</button>';
+    document.querySelector('.wrap').appendChild(ed);
+    saida=function(){document.getElementById('edt').value=JSON.stringify(D.lugares.map(function(l){return {id:l.id,x:l.x,y:l.y}}))};
+    saida();
+    document.getElementById('edc').onclick=function(){var t=document.getElementById('edt');t.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}this.textContent=ok?'Copiado!':'Selecione e copie';var b=this;setTimeout(function(){b.textContent='Copiar posições'},1500)};
+    document.getElementById('edr').onclick=function(){try{localStorage.removeItem('mapaPos')}catch(e){}location.reload()};
+  }
   // ---- pan / zoom
   var s=1,tx=0,ty=0,minS=0.1;
   function apply(){stage.style.transform='translate('+tx+'px,'+ty+'px) scale('+s+')';var k=1/Math.max(s,.35);document.querySelectorAll('.pin').forEach(function(p){p.style.transform='translate(-50%,-100%) scale('+Math.min(k,1.5)+')';p.style.transformOrigin='50% 100%'})}
@@ -147,7 +175,7 @@ svg#rota{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:no
   function up(e){delete pts[e.pointerId];if(!Object.keys(pts).length){drag=false;view.classList.remove('drag')}}
   view.addEventListener('pointerup',up);view.addEventListener('pointercancel',up);
   view.addEventListener('wheel',function(e){e.preventDefault();var rc=view.getBoundingClientRect();zoomAt(e.deltaY<0?1.15:1/1.15,e.clientX-rc.left,e.clientY-rc.top)},{passive:false});
-  view.addEventListener('click',function(){if(!moved)fechar()});
+  view.addEventListener('click',function(){if(!moved&&!EDIT)fechar()});
   $('#zin').onclick=function(){zoomAt(1.3,view.clientWidth/2,view.clientHeight/2)};
   $('#zout').onclick=function(){zoomAt(1/1.3,view.clientWidth/2,view.clientHeight/2)};
   $('#zfit').onclick=fit;
