@@ -14,6 +14,8 @@ h1{margin:0;font-size:1.15rem;color:var(--acc)}
 .tabs{display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--bg);flex-wrap:wrap;align-items:center}
 .tab,.tg{cursor:pointer;padding:5px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink);font:inherit;font-size:.85rem}
 .tab.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.lnk{cursor:pointer;padding:5px 12px;border:1px solid var(--acc);border-radius:999px;background:var(--acc);color:#fff;font:inherit;font-size:.85rem;text-decoration:none;white-space:nowrap}
+.lnk:hover{filter:brightness(1.1)}
 .tg.off{opacity:.45;text-decoration:line-through}
 .sp{flex:1}
 .wrap{flex:1;min-height:0;display:flex;position:relative}
@@ -81,7 +83,7 @@ body.editar .pin .lbl::after{content:' *';color:#ffd54a}
 <div class="tabs">
   <button class="tab on" data-v="mapa">Mapa</button><button class="tab" data-v="linha">Linha do tempo</button><button class="tab" data-v="duv">Dúvidas</button>
   <span class="sp"></span>
-  <button class="tg" id="tgn" title="Retratos de NPCs">NPCs</button><button class="tg" id="tgr" title="Rota percorrida">Rota</button><button class="tg" id="tgu" title="Rumores e pistas">Rumores</button>
+  <button class="tg" id="tgn" title="Retratos de NPCs">NPCs</button><button class="tg" id="tgr" title="Rota percorrida">Rota</button><button class="tg" id="tgu" title="Rumores e pistas">Rumores</button><a class="lnk" href="https://augustolenzi.github.io/campanha-5e-assets/tabelas/precos.html" target="_blank" rel="noopener">&#128176; Tabela de preços</a>
 </div>
 <div class="wrap">
   <div class="view" id="view"><div id="stage"></div>
