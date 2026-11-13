@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tesouro Aleatório</title>
+<style>
+:root{--bg:#f6f1e7;--card:#fffaf0;--ink:#2a2118;--mut:#7a6a58;--line:#e2d6c0;--acc:#8a5a14;--accbg:#f1e2c2;--ok:#2f6b3a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17130e;--card:#211b13;--ink:#eee3cf;--mut:#a89883;--line:#3a2f20;--acc:#e0b060;--accbg:#3a2d17;--ok:#7bc98a}}
+:root[data-theme="dark"]{--bg:#17130e;--card:#211b13;--ink:#eee3cf;--mut:#a89883;--line:#3a2f20;--acc:#e0b060;--accbg:#3a2d17;--ok:#7bc98a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,Segoe UI,sans-serif}
+main{max-width:860px;margin:0 auto;padding:16px}
+h1{font-size:1.5rem;margin:.2rem 0}
+h2{font-size:1.1rem;margin:1.6rem 0 .6rem;color:var(--acc)}
+p.sub{color:var(--mut);margin:.2rem 0 1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+button,select,input{font:inherit;color:inherit}
+button{background:var(--accbg);border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer}
+button:hover{border-color:var(--acc)}
+button.pri{background:var(--acc);color:var(--bg);border-color:var(--acc);font-weight:600}
+select,input{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px}
+input[type=text]{width:6.5rem}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
+.adv{font-weight:600;margin:12px 0 4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+#log .res{border-top:1px solid var(--line);padding:10px 0}
+#log .res:first-child{border-top:0}
+.tit{font-weight:600}
+.dado{color:var(--mut);font-size:.9rem}
+.tot{color:var(--ok);font-weight:600}
+ul{margin:.3rem 0 .3rem 1.2rem;padding:0}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+td,th{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}
+td:first-child{white-space:nowrap;color:var(--mut);width:4.5rem}
+details{border:1px solid var(--line);border-radius:10px;margin:8px 0;background:var(--card)}
+summary{cursor:pointer;padding:10px 12px;font-weight:600}
+details .in{padding:0 12px 10px}
+.hint{color:var(--mut);font-size:.88rem}
+</style>
+</head>
+<body>
+<main>
+<h1>Tesouro Aleatório</h1>
+<p class="sub">Para o Mestre. Rola gemas, objetos de arte e itens mágicos nas tabelas da campanha. Não compartilhe com os jogadores.</p>
+
+<h2>Atalhos por aventura</h2>
+<div id="atalhos"></div>
+
+<h2>Rolagem livre</h2>
+<div class="card">
+  <div class="row"><b>Gemas</b>
+    <input id="gq" type="text" value="1d4" aria-label="quantidade de gemas">
+    <select id="gv"></select>
+    <button id="gb" class="pri">Rolar gemas</button></div>
+  <div class="row"><b>Arte</b>
+    <input id="aq" type="text" value="1" aria-label="quantidade de objetos de arte">
+    <select id="av"></select>
+    <button id="ab" class="pri">Rolar arte</button></div>
+  <div class="row"><b>Item</b>
+    <input id="iq" type="text" value="1" aria-label="quantidade de itens">
+    <select id="it"></select>
+    <button id="ib" class="pri">Rolar item</button></div>
+  <div class="hint">Quantidade aceita número ou dados, como 2d4 ou 1d6+1.</div>
+</div>
+
+<h2>Resultado</h2>
+<div class="row"><button id="copiar">Copiar tudo</button><button id="limpar">Limpar</button><span id="tt" class="tot"></span></div>
+<div class="card" id="log"><span class="hint">Nada rolado ainda.</span></div>
+
+<h2>Tabelas</h2>
+<div id="tabelas"></div>
+</main>
+<script>
+const DATA = {"gems":{"10":{"v":10,"rows":["Azurita (opaca, azul-escuro mosqueado)","Ágata-listrada (translúcida, listras marrom, azul, branco ou vermelho)","Quartzo azul (transparente, azul-pálido)","Ágata-olho (translúcida, círculos cinza, branco, marrom, azul ou verde)","Hematita (opaca, cinza-enegrecida)","Lápis-lazúli (opaco, azul-claro e escuro com pontos amarelos)","Malaquita (opaca, verde-claro e escuro listrado)","Ágata-musgo (translúcida, rosa ou amarelo-esbranquiçada, manchas verdes)","Obsidiana (opaca, preta)","Rodocrosita (opaca, rosa-claro)","Olho-de-tigre (translúcido, marrom com centro dourado)","Turquesa (opaca, azul-esverdeada)"]},"50":{"v":50,"rows":["Pedra-sangue (opaca, cinza-escura com pontos vermelhos)","Cornalina (opaca, laranja a marrom-avermelhada)","Calcedônia (opaca, branca)","Crisoprásio (translúcido, verde)","Citrino (transparente, amarelo-amarronzado)","Jaspe (opaco, azul, preto ou marrom)","Pedra-da-lua (translúcida, branca com brilho azul-pálido)","Ônix (opaco, bandas pretas e brancas, ou preto ou branco puro)","Quartzo (transparente, branco, cinza-fumê ou amarelo)","Sardônix (opaco, bandas vermelhas e brancas)","Quartzo-rosa estrelado (translúcido, centro branco em forma de estrela)","Zircão (transparente, azul-esverdeado pálido)"]},"100":{"v":100,"rows":["Âmbar (transparente, dourado-aguado a dourado rico)","Ametista (transparente, roxo-escuro)","Crisoberilo (transparente, amarelo-esverdeado a verde-pálido)","Coral (opaco, carmesim)","Granada (transparente, vermelha, marrom-esverdeada ou violeta)","Jade (translúcido, verde-claro, verde-escuro ou branco)","Azeviche (opaco, preto profundo)","Pérola (opaca, branca lustrosa, amarela ou rosa)","Espinélio (transparente, vermelho, marrom-avermelhado ou verde-escuro)","Turmalina (transparente, verde-pálido, azul, marrom ou vermelha)"]},"500":{"v":500,"rows":["Alexandrita (transparente, verde-escuro)","Água-marinha (transparente, azul-esverdeado pálido)","Pérola negra (opaca, preto puro)","Espinélio azul (transparente, azul-profundo)","Peridoto (transparente, verde-oliva rico)","Topázio (transparente, amarelo-dourado)"]},"1000":{"v":1000,"rows":["Opala negra (translúcida, verde-escura com manchas pretas e pontos dourados)","Safira azul (transparente, azul-esbranquiçado a azul médio)","Esmeralda (transparente, verde-brilhante profundo)","Opala de fogo (translúcida, vermelho-flamejante)","Opala (translúcida, azul-pálido com manchas verdes e douradas)","Rubi estrelado (translúcido, rubi com centro branco em estrela)","Safira estrelada (translúcida, safira azul com centro branco em estrela)","Safira amarela (transparente, amarelo-flamejante ou amarelo-esverdeado)"]},"5000":{"v":5000,"rows":["Safira negra (translúcida, preto lustroso com reflexos brilhantes)","Diamante (transparente, branco-azulado, canário, rosa, marrom ou azul)","Jacinto (transparente, laranja-flamejante)","Rubi (transparente, vermelho-claro a carmesim profundo)"]}},"art":{"25":{"v":25,"rows":["Jarra de prata","Estatueta de osso entalhado","Pulseira pequena de ouro","Vestes de tecido de ouro","Máscara de veludo preto bordada com fio de prata","Cálice de cobre com filigrana de prata","Par de dados de osso gravados","Espelho pequeno em moldura de madeira pintada","Lenço de seda bordado","Medalhão de ouro com retrato pintado dentro"]},"250":{"v":250,"rows":["Anel de ouro com pedras-sangue","Estatueta de marfim entalhado","Pulseira grande de ouro","Colar de prata com pingente de gema","Coroa de bronze","Manto de seda com bordado de ouro","Tapeçaria grande bem-feita","Caneca de latão com incrustação de jade","Caixa de figuras de animais em turquesa","Gaiola de pássaro de ouro com filigrana"]},"750":{"v":750,"rows":["Cálice de prata com pedras-da-lua","Espada longa de aço banhada a prata com azeviche no punho","Harpa entalhada de madeira exótica com marfim e zircões","Pequeno ídolo de ouro","Pente de ouro em forma de dragão com granadas vermelhas como olhos","Rolha de garrafa com folha de ouro e ametistas","Adaga cerimonial com pérola negra no pomo","Broche de prata e ouro","Estatueta de obsidiana com detalhes de ouro","Máscara de guerra de ouro pintada"]},"2500":{"v":2500,"rows":["Corrente fina de ouro com opala de fogo","Pintura de um velho mestre","Manto de seda e veludo bordado com muitas pedras-da-lua","Bracelete de platina com safira","Luva bordada com fragmentos de joias","Tornozeleira de joias","Caixa de música de ouro","Diadema de ouro com quatro águas-marinhas","Tapa-olho com olho falso de safira azul e pedra-da-lua","Colar de pequenas pérolas rosadas"]}},"items":{"A":{"nome":"itens comuns","rows":[["01-50","Poção de cura (Potion of healing)"],["51-60","Pergaminho de magia (truque) (Spell scroll (cantrip))"],["61-70","Poção de escalada (Potion of climbing)"],["71-90","Pergaminho de magia (1º círculo) (Spell scroll (1st level))"],["91-94","Pergaminho de magia (2º círculo) (Spell scroll (2nd level))"],["95-98","Poção de cura maior (Potion of greater healing)"],["99","Bolsa de carga (Bag of holding)"],["00","Globo de luz à deriva (Driftglobe)"]]},"B":{"nome":"itens incomuns (consumíveis e utilitários)","rows":[["01-15","Poção de cura maior (Potion of greater healing)"],["16-22","Poção de sopro de fogo (Potion of fire breath)"],["23-29","Poção de resistência (Potion of resistance)"],["30-34","Munição +1 (+1 ammunition)"],["35-39","Poção de amizade animal (Potion of animal friendship)"],["40-44","Poção de força de gigante da colina (Potion of hill giant strength)"],["45-49","Poção de crescimento (Potion of growth)"],["50-54","Poção de respiração aquática (Potion of water breathing)"],["55-59","Pergaminho de magia (2º círculo) (Spell scroll (2nd level))"],["60-64","Pergaminho de magia (3º círculo) (Spell scroll (3rd level))"],["65-67","Bolsa de carga (Bag of holding)"],["68-70","Ungüento de Keoghtom (Keoghtom's ointment)"],["71-73","Óleo de escorregadio (Oil of slipperiness)"],["74-75","Pó do desaparecimento (Dust of disappearance)"],["76-77","Pó da secura (Dust of dryness)"],["78-79","Pó de espirros e sufocamento (Dust of sneezing and choking)"],["80-81","Gema elemental (Elemental gem)"],["82-83","Filtro do amor (Philter of love)"],["84","Jarro de alquimia (Alchemy jug)"],["85","Gorro de respiração aquática (Cap of water breathing)"],["86","Capa da arraia (Cloak of the manta ray)"],["87","Globo de luz à deriva (Driftglobe)"],["88","Óculos noturnos (Goggles of night)"],["89","Elmo de compreensão de idiomas (Helm of comprehending languages)"],["90","Bastão imóvel (Immovable rod)"],["91","Lanterna reveladora (Lantern of revealing)"],["92","Armadura do marujo (Mariner's armor)"],["93","Armadura de mithral (Mithral armor)"],["94","Poção de veneno (Potion of poison)"],["95","Anel de natação (Ring of swimming)"],["96","Manto de itens úteis (Robe of useful items)"],["97","Corda de escalada (Rope of climbing)"],["98","Sela do cavaleiro (Saddle of the cavalier)"],["99","Varinha de detecção de magia (Wand of magic detection)"],["00","Varinha de segredos (Wand of secrets)"]]},"C":{"nome":"itens raros (consumíveis)","rows":[["01-15","Poção de cura superior (Potion of superior healing)"],["16-22","Pergaminho de magia (4º círculo) (Spell scroll (4th level))"],["23-27","Munição +2 (+2 ammunition)"],["28-32","Poção de clarividência (Potion of clairvoyance)"],["33-37","Poção de diminuição (Potion of diminution)"],["38-42","Poção de forma gasosa (Potion of gaseous form)"],["43-47","Poção de força de gigante do gelo (Potion of frost giant strength)"],["48-52","Poção de força de gigante da pedra (Potion of stone giant strength)"],["53-57","Poção de heroísmo (Potion of heroism)"],["58-62","Poção de invulnerabilidade (Potion of invulnerability)"],["63-67","Poção de leitura da mente (Potion of mind reading)"],["68-72","Pergaminho de magia (5º círculo) (Spell scroll (5th level))"],["73-75","Elixir de saúde (Elixir of health)"],["76-78","Óleo de etereidade (Oil of etherealness)"],["79-81","Poção de força de gigante do fogo (Potion of fire giant strength)"],["82-84","Pena mágica de Quaal (Quaal's feather token)"],["85-87","Pergaminho de proteção (Scroll of protection)"],["88-89","Bolsa de feijões (Bag of beans)"],["90-91","Conta de força (Bead of force)"],["92","Sino de abertura (Chime of opening)"],["93","Garrafa de água infinita (Decanter of endless water)"],["94","Olhos de visão minuciosa (Eyes of minute seeing)"],["95","Barco dobrável (Folding boat)"],["96","Mochila prática de Heward (Heward's handy haversack)"],["97","Ferraduras de velocidade (Horseshoes of speed)"],["98","Colar de bolas de fogo (Necklace of fireballs)"],["99","Periapto da saúde (Periapt of health)"],["00","Pedras de mensagem (Sending stones)"]]},"D":{"nome":"itens muito raros (consumíveis)","rows":[["01-20","Poção de cura suprema (Potion of supreme healing)"],["21-30","Poção de invisibilidade (Potion of invisibility)"],["31-40","Poção de velocidade (Potion of speed)"],["41-50","Pergaminho de magia (6º círculo) (Spell scroll (6th level))"],["51-57","Pergaminho de magia (7º círculo) (Spell scroll (7th level))"],["58-62","Munição +3 (+3 ammunition)"],["63-67","Óleo de afiação (Oil of sharpness)"],["68-72","Poção de voo (Potion of flying)"],["73-77","Poção de força de gigante das nuvens (Potion of cloud giant strength)"],["78-82","Poção de longevidade (Potion of longevity)"],["83-87","Poção de vitalidade (Potion of vitality)"],["88-92","Pergaminho de magia (8º círculo) (Spell scroll (8th level))"],["93-95","Ferraduras do zéfiro (Horseshoes of a zephyr)"],["96-98","Pigmentos maravilhosos de Nolzur (Nolzur's marvelous pigments)"],["99","Bolsa devoradora (Bag of devouring)"],["00","Buraco portátil (Portable hole)"]]},"F":{"nome":"itens permanentes (incomuns)","rows":[["01-15","Arma +1 (+1 weapon)"],["16-18","Escudo +1 (+1 shield)"],["19-21","Escudo sentinela (Sentinel shield)"],["22-23","Amuleto contra detecção e localização (Amulet of proof against detection and location)"],["24-25","Botas élficas (Boots of elvenkind)"],["26-27","Botas de passo largo e salto (Boots of striding and springing)"],["28-29","Braçadeiras de arquearia (Bracers of archery)"],["30-31","Broche de proteção (Brooch of shielding)"],["32-33","Vassoura voadora (Broom of flying)"],["34-35","Capa élfica (Cloak of elvenkind)"],["36-37","Capa de proteção (Cloak of protection)"],["38-39","Manoplas de poder de ogro (Gauntlets of ogre power)"],["40-41","Chapéu de disfarce (Hat of disguise)"],["42-43","Dardo de relâmpago (Javelin of lightning)"],["44-45","Pérola de poder (Pearl of power)"],["46-47","Bastão do guardião do pacto +1 (+1 rod of the pact keeper)"],["48-49","Chinelos de escalada de aranha (Slippers of spider climbing)"],["50-51","Cajado da víbora (Staff of the adder)"],["52-53","Cajado da píton (Staff of the python)"],["54-55","Espada da vingança (Sword of vengeance)"],["56-57","Tridente de comando de peixes (Trident of fish command)"],["58-59","Varinha de mísseis mágicos (Wand of magic missiles)"],["60-61","Varinha do mago de guerra +1 (+1 wand of the war mage)"],["62-63","Varinha de teia (Wand of web)"],["64-65","Arma de aviso (Weapon of warning)"],["66","Cota de malha de adamante (Adamantine chain mail)"],["67","Camisa de malha de adamante (Adamantine chain shirt)"],["68","Brunea de adamante (Adamantine scale mail)"],["69","Bolsa de truques (cinza) (Bag of tricks, gray)"],["70","Bolsa de truques (ferrugem) (Bag of tricks, rust)"],["71","Bolsa de truques (bege) (Bag of tricks, tan)"],["72","Botas das terras geladas (Boots of the Winterlands)"],["73","Diadema de explosão (Circlet of blasting)"],["74","Baralho de ilusões (Deck of illusions)"],["75","Garrafa de fumaça eterna (Eversmoking bottle)"],["76","Olhos de encantamento (Eyes of charming)"],["77","Olhos de águia (Eyes of the eagle)"],["78","Estatueta de poder maravilhoso (corvo de prata) (Figurine of wondrous power, silver raven)"],["79","Gema de brilho (Gem of brightness)"],["80","Luvas de captura de projéteis (Gloves of missile snaring)"],["81","Luvas de natação e escalada (Gloves of swimming and climbing)"],["82","Luvas de furto (Gloves of thievery)"],["83","Bandana do intelecto (Headband of intellect)"],["84","Elmo de telepatia (Helm of telepathy)"],["85","Instrumento dos bardos (alaúde Doss) (Instrument of the bards, Doss lute)"],["86","Instrumento dos bardos (bandora Fochlucan) (Instrument of the bards, Fochlucan bandore)"],["87","Instrumento dos bardos (cítara Mac-Fuirmidh) (Instrument of the bards, Mac-Fuirmidh cittern)"],["88","Medalhão de pensamentos (Medallion of thoughts)"],["89","Colar de adaptação (Necklace of adaptation)"],["90","Periapto de fechamento de feridas (Periapt of wound closure)"],["91","Flauta assombrosa (Pipes of haunting)"],["92","Flauta dos esgotos (Pipes of the sewers)"],["93","Anel de salto (Ring of jumping)"],["94","Anel de proteção mental (Ring of mind shielding)"],["95","Anel de calor (Ring of warmth)"],["96","Anel de caminhar sobre a água (Ring of water walking)"],["97","Aljava de Ehlonna (Quiver of Ehlonna)"],["98","Pedra da sorte (Stone of good luck)"],["99","Leque de vento (Wind fan)"],["00","Botas aladas (Winged boots)"]]}}};
+const PRESETS = [{"adv":"Death at Sunset","nome":"L5 — tesouro do filhote","passos":[{"k":"gem","q":"2d4","v":50},{"k":"gem","q":"1d4","v":100},{"k":"item","q":"1","v":"A"}]},{"adv":"Death at Sunset","nome":"L3 — baú de Marilissa","passos":[{"k":"gem","q":"1d4","v":50},{"k":"art","q":"1","v":25},{"k":"item","q":"1","v":"A"}]},{"adv":"Death at Sunset","nome":"R7 — bolsa do chefe bandido","passos":[{"k":"gem","q":"1d6","v":10}]},{"adv":"Baker's Doesn't","nome":"C15 — pertences das vítimas","passos":[{"k":"gem","q":"1d4","v":100},{"k":"art","q":"1d4","v":25},{"k":"item","q":"1d2","v":"B"}]},{"adv":"The Will of Orcus","nome":"Cultistas (os 3)","passos":[{"k":"gem","q":"3d4","v":10}]},{"adv":"The Will of Orcus","nome":"T12 — Xia","passos":[{"k":"gem","q":"1d4","v":50},{"k":"item","q":"1","v":"B"}]},{"adv":"The Will of Orcus","nome":"T14 — um cofre secreto","passos":[{"k":"gem","q":"1d6","v":100},{"k":"art","q":"1","v":250}]},{"adv":"The Will of Orcus","nome":"Nezzarum (se o grupo agir bem)","passos":[{"k":"gem","q":"1","v":500},{"k":"item","q":"1","v":"B"}]},{"adv":"For Whom the Void Calls","nome":"S10–S12 — tesouro de Ylagan","passos":[{"k":"gem","q":"1d4","v":500},{"k":"gem","q":"2d4","v":100},{"k":"item","q":"1d2","v":"C"}]},{"adv":"For Whom the Void Calls","nome":"S18 — Qaara (se aliada)","passos":[{"k":"item","q":"1","v":"B"}]},{"adv":"For Whom the Void Calls","nome":"Uma suíte (S21–S23)","passos":[{"k":"gem","q":"1d6","v":50}]}];
+const fmt = n => n.toLocaleString('pt-BR');
+const ri = n => 1 + Math.floor(Math.random() * n);
+function rolaExpr(e){
+  e = String(e).replace(/\s/g,'');
+  const m = e.match(/^(\d*)d(\d+)([+-]\d+)?$/i);
+  if(!m){ const n = parseInt(e,10); return {total: isNaN(n)?1:n, txt: String(isNaN(n)?1:n)}; }
+  const q = +(m[1]||1), f = +m[2], b = +(m[3]||0);
+  const ds = Array.from({length:q},()=>ri(f));
+  return {total: ds.reduce((a,c)=>a+c,0)+b, txt: e+' = ['+ds.join(', ')+']'+(b?(b>0?'+':'')+b:'')};
+}
+function linhaItem(t){
+  const r = ri(100), v = r===100?0:r;
+  const row = DATA.items[t].rows.find(([a])=>{
+    if(a==='00') return r===100;
+    const p = a.split('-').map(Number);
+    return p.length===1 ? v===p[0] : (v>=p[0] && v<=p[1]);
+  });
+  return {r, nome: row?row[1]:'?'};
+}
+function rodaPasso(p){
+  const q = rolaExpr(p.q);
+  const out = {titulo:'', dado:'', linhas:[], valor:0};
+  if(p.k==='gem' || p.k==='art'){
+    const T = (p.k==='gem'?DATA.gems:DATA.art)[p.v], n = T.rows.length;
+    const cont = {};
+    for(let i=0;i<q.total;i++){ const x = T.rows[ri(n)-1]; cont[x] = (cont[x]||0)+1; }
+    out.titulo = q.total+' '+(p.k==='gem'?'gema'+(q.total>1?'s':''):'objeto'+(q.total>1?'s':'')+' de arte')+' de '+fmt(p.v)+' PO';
+    out.dado = q.txt+' (qtd) · d'+n+' (tipo)';
+    out.linhas = Object.entries(cont).map(([k,c])=>c+'× '+k);
+    out.valor = q.total * p.v;
+  } else {
+    out.titulo = q.total+'× Tabela '+p.v;
+    out.dado = q.txt+' (qtd) · d100';
+    for(let i=0;i<q.total;i++){ const x = linhaItem(p.v); out.linhas.push('d100='+x.r+' → '+x.nome+(/Pergaminho de magia/.test(x.nome)?' (escolha a magia)':'')); }
+  }
+  return out;
+}
+const LOG = [];
+function mostra(nome, passos){
+  const res = passos.map(rodaPasso);
+  const valor = res.reduce((a,r)=>a+r.valor,0);
+  LOG.unshift({nome, res, valor});
+  desenha();
+}
+function desenha(){
+  const el = document.getElementById('log');
+  if(!LOG.length){ el.innerHTML = '<span class="hint">Nada rolado ainda.</span>'; document.getElementById('tt').textContent=''; return; }
+  el.innerHTML = LOG.map(r=>'<div class="res"><div class="tit">'+r.nome+(r.valor?' <span class="tot">· '+fmt(r.valor)+' PO</span>':'')+'</div>'+
+    r.res.map(x=>'<div>'+x.titulo+(x.valor?' <span class="tot">('+fmt(x.valor)+' PO)</span>':'')+'<div class="dado">'+x.dado+'</div><ul>'+x.linhas.map(l=>'<li>'+l+'</li>').join('')+'</ul></div>').join('')+'</div>').join('');
+  const tot = LOG.reduce((a,r)=>a+r.valor,0);
+  document.getElementById('tt').textContent = 'Total em gemas e arte: '+fmt(tot)+' PO';
+}
+function texto(){
+  return LOG.slice().reverse().map(r=>r.nome+(r.valor?' ('+fmt(r.valor)+' PO)':'')+'\n'+r.res.map(x=>'  '+x.titulo+'\n'+x.linhas.map(l=>'    - '+l).join('\n')).join('\n')).join('\n\n');
+}
+// montagem
+const advs = {};
+PRESETS.forEach(p=>{ (advs[p.adv]=advs[p.adv]||[]).push(p); });
+document.getElementById('atalhos').innerHTML = Object.entries(advs).map(([a,ps])=>'<div class="adv">'+a+'</div><div class="chips">'+ps.map(p=>'<button data-p="'+PRESETS.indexOf(p)+'">'+p.nome+'</button>').join('')+'</div>').join('');
+document.querySelectorAll('#atalhos button').forEach(b=>b.onclick=()=>{ const p = PRESETS[+b.dataset.p]; mostra(p.adv+' · '+p.nome, p.passos); });
+const opt = (o)=>Object.keys(o).sort((a,b)=>+a-+b).map(k=>'<option value="'+k+'">'+fmt(+k)+' PO</option>').join('');
+document.getElementById('gv').innerHTML = opt(DATA.gems); document.getElementById('gv').value = '50';
+document.getElementById('av').innerHTML = opt(DATA.art); document.getElementById('av').value = '25';
+document.getElementById('it').innerHTML = Object.keys(DATA.items).map(k=>'<option value="'+k+'">Tabela '+k+' — '+DATA.items[k].nome+'</option>').join('');
+document.getElementById('gb').onclick = ()=>mostra('Rolagem livre',[{k:'gem',q:document.getElementById('gq').value,v:+document.getElementById('gv').value}]);
+document.getElementById('ab').onclick = ()=>mostra('Rolagem livre',[{k:'art',q:document.getElementById('aq').value,v:+document.getElementById('av').value}]);
+document.getElementById('ib').onclick = ()=>mostra('Rolagem livre',[{k:'item',q:document.getElementById('iq').value,v:document.getElementById('it').value}]);
+document.getElementById('limpar').onclick = ()=>{ LOG.length=0; desenha(); };
+document.getElementById('copiar').onclick = async ()=>{ try{ await navigator.clipboard.writeText(texto()); const b=document.getElementById('copiar'); b.textContent='Copiado!'; setTimeout(()=>b.textContent='Copiar tudo',1500);}catch(e){ prompt('Copie:',texto()); } };
+// tabelas
+let th = '';
+const gtab = (tit,T)=>'<details><summary>'+tit+'</summary><div class="in"><table>'+T.rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r+'</td></tr>').join('')+'</table></div></details>';
+th += '<div class="adv">Gemas</div>'+Object.keys(DATA.gems).sort((a,b)=>+a-+b).map(k=>gtab('Gemas de '+fmt(+k)+' PO (d'+DATA.gems[k].rows.length+')',DATA.gems[k])).join('');
+th += '<div class="adv">Objetos de arte</div>'+Object.keys(DATA.art).sort((a,b)=>+a-+b).map(k=>gtab('Arte de '+fmt(+k)+' PO (d'+DATA.art[k].rows.length+')',DATA.art[k])).join('');
+th += '<div class="adv">Itens mágicos</div>'+Object.keys(DATA.items).map(k=>'<details><summary>Tabela '+k+' — '+DATA.items[k].nome+'</summary><div class="in"><table>'+DATA.items[k].rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('')+'</table></div></details>').join('');
+document.getElementById('tabelas').innerHTML = th;
+</script>
+</body>
+</html>
