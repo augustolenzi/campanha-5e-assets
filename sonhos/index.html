@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sonhos do Ovo</title>
+<style>
+:root{--bg:#0f0d1f;--bg2:#1b1740;--card:#1a1633cc;--ink:#ece8ff;--mut:#a69fd0;--line:#3a3370;--acc:#e8c46a;--acc2:#8f7bff;--ok:#7be0a0;--bad:#ff8a8a}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--ink);font:17px/1.55 Georgia,'Times New Roman',serif;background:radial-gradient(1200px 700px at 20% -10%,var(--bg2),transparent),radial-gradient(900px 600px at 100% 10%,#2a1a4a,transparent),var(--bg)}
+main{max-width:760px;margin:0 auto;padding:18px 16px 60px}
+h1{font-size:1.9rem;margin:.4rem 0 .1rem;color:var(--acc);letter-spacing:.5px}
+h2{font-size:1.3rem;margin:.2rem 0;color:var(--acc)}
+.sub{color:var(--mut);margin:.1rem 0 1.2rem;font-style:italic}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0;backdrop-filter:blur(2px)}
+.dream{cursor:pointer;display:flex;gap:12px;align-items:center}
+.dream:hover{border-color:var(--acc2)}
+.dream .ico{font-size:1.8rem}
+.dream .t{font-weight:700}
+.dream .m{color:var(--mut);font-size:.9rem}
+.ok{color:var(--ok)}
+button,input{font:inherit;color:inherit}
+button{background:#2b2560;border:1px solid var(--line);border-radius:10px;padding:9px 14px;cursor:pointer}
+button:hover{border-color:var(--acc)}
+button.pri{background:var(--acc);color:#241a05;border-color:var(--acc);font-weight:700}
+button.ghost{background:transparent}
+input[type=text]{width:100%;background:#120f2a;border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.msg{margin:8px 0;min-height:1.4em}
+.bad{color:var(--bad)}
+.hint{color:var(--mut);border-left:3px solid var(--acc2);padding-left:10px;margin:6px 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.chip{background:#241f55;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.chip.on{opacity:.35;pointer-events:none}
+.slots{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.slot{border:1px dashed var(--line);border-radius:10px;padding:8px 10px;min-height:2.4rem;color:var(--mut)}
+.slot.f{border-style:solid;color:var(--ink);background:#1d1948}
+.sig{font-size:1.6rem;min-width:3.2rem;text-align:center}
+.code{font:700 1.6rem/1.2 ui-monospace,Consolas,monospace;letter-spacing:2px;color:var(--acc);text-align:center;border:2px solid var(--acc);border-radius:12px;padding:14px;margin:12px 0;user-select:all;word-break:break-all}
+.back{margin:0 0 10px}
+.stage{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}
+.cifra{font:700 1.25rem/1.6 ui-monospace,Consolas,monospace;letter-spacing:2px;color:#cfc6ff;background:#120f2a;border-radius:10px;padding:10px;word-break:break-word}
+small{color:var(--mut)}
+</style>
+</head>
+<body>
+<main>
+<div id="app"></div>
+</main>
+<script>
+const DATA = {"salt":"ovo-de-latao-1501","sessao":2,"sonhos":[{"id":1,"sessao":1,"dif":1,"tier":"facil","icone":"🧺","titulo":"A Cesta Coberta","intro":"Vocês sonham com um pano sendo erguido, devagar, e uma luz morna por baixo dele.","etapas":[{"texto":"Uma voz sem boca sussurra: \"Cheguei coberto por um pano, dentro de uma cesta. Sou de latão, mas não sirvo de armadura. Guardo algo que ainda não nasceu. O que sou?\"","dicas":["Pense no que vocês carregam.","É um objeto redondo, de um dragão metálico."],"hashes":["2dojw106gmb","ttumsincmx","1l0n8w8l5om"],"tipo":"texto"},{"texto":"A voz continua: \"Para despertar, quantos tesouros de dragão devo banhar?\"","dicas":["Um para cada tipo de dragão, cromático e metálico.","É um número redondo, o dobro de cinco."],"hashes":["14x0hkwoxxx","reh47ezjej"],"tipo":"texto"},{"texto":"\"E quem me deu a vocês, em Neverwinter?\"","dicas":["Uma maga de olhos dourados.","Ela fugiu depois."],"hashes":["yp993m1hao"],"tipo":"texto"}]},{"id":2,"sessao":1,"dif":1,"tier":"facil","icone":"🥁","titulo":"O Ritmo e o Sono","intro":"Tambores ao longe. Alguém dorme em pé. Tudo gira numa dança.","etapas":[{"texto":"Os fatos de Neverwinter se embaralham no sonho como cartas. Coloque-os na ordem em que aconteceram.","tipo":"seq","itens":[{"id":"e1","nome":"A mulher entrega a cesta e conta a história dos dragões"},{"id":"e2","nome":"A ladra joga a cesta e o ladrão corre"},{"id":"e3","nome":"O sono de Laerorndaer derruba Rickson e o ladrão"},{"id":"e4","nome":"O berimbau de Rickson atrai o maracatu"},{"id":"e5","nome":"O grupo dorme na taverna Cinthya"},{"id":"e6","nome":"Todos têm o mesmo sonho"}],"dicas":["Tudo começa com a cesta.","O sonho compartilhado vem depois de dormir."],"hashes":["2erqwjiywvl"]}]},{"id":3,"sessao":2,"dif":2,"tier":"media","icone":"🌲","titulo":"As Seis Raízes","intro":"Seis árvores gigantes respiram juntas. Entre elas, um círculo de musgo espera.","etapas":[{"texto":"Seis sequoias em círculo, cada uma marcada por um sinal. Ponha os sinais nas posições de 1 a 6, em sentido horário. Pistas do sonho: (1) A Gota está na posição 1. (2) O Sol está do lado oposto da Gota. (3) A Estrela está ao lado da Gota. (4) A Lua não está ao lado do Sol. (5) A Chama fica logo depois da Lua, no sentido horário.","tipo":"seq","itens":[{"id":"agua","nome":"Gota","sig":"💧"},{"id":"lua","nome":"Lua","sig":"🌙"},{"id":"fogo","nome":"Chama","sig":"🔥"},{"id":"sol","nome":"Sol","sig":"☀️"},{"id":"folha","nome":"Folha","sig":"🍃"},{"id":"estrela","nome":"Estrela","sig":"⭐"}],"dicas":["Posição 4 fica oposta à 1.","Só duas posições servem à Estrela. A Lua, longe do Sol, sobra num dos lados."],"hashes":["22g6uecg92h"]}]},{"id":4,"sessao":2,"dif":2,"tier":"media","icone":"🐉","titulo":"O Nome Gritado","intro":"Um rugido sem som. As letras caem do céu como cinzas.","etapas":[{"texto":"Uma frase se esconde no sonho, com as letras deslocadas. Decifre-a e escreva a segunda palavra.","dicas":["Cada letra foi empurrada para a frente no alfabeto. Volte cinco casas.","A primeira palavra tem três letras e é um pronome."],"hashes":["pmdrr5jeib","6j58l2vcnq"],"tipo":"texto","cifra":"JQF IJXHNF FT FSTNYJHJW J LWNYFAF T UWTUWNT STRJ"},{"texto":"Então: que nome ela gritava?","dicas":["Xu o usou ao se apresentar.","Em inglês: morte, ao, pôr do sol."],"hashes":["tazpv17f89","tazpv17f89","tazpv17f89"],"tipo":"texto"}]},{"id":5,"sessao":2,"dif":3,"tier":"media","icone":"⚖️","titulo":"Quem Diz a Verdade","intro":"Três vultos conhecidos, todos de olhos fechados. Um deles sorri.","etapas":[{"texto":"Três guardiões, três caixas: Raiz, Pedra e Folha. Uma tem a gema. Cada um diz uma coisa, e só um deles fala a verdade.\nSelenar: \"A gema não está na caixa da Raiz.\"\nGwenhumara: \"A gema está na caixa da Folha.\"\nKaynen: \"Gwenhumara mente.\"\nEm qual caixa está a gema?","dicas":["Teste cada caixa e conte quantos falam a verdade.","Só uma caixa deixa exatamente um dos três certo."],"hashes":["1fcry920bvh","7suyxoswbr","29kwmv47vs6"],"tipo":"texto"},{"texto":"Na caixa certa, quantos dos três guardiões falaram a verdade?","dicas":["O enunciado já diz."],"hashes":["wy6azi9qrd","oc1l9pfnn4","ci4iygbtmy","24z44j97pps","z4nnzo7m6a"],"tipo":"texto"}]},{"id":6,"sessao":2,"dif":4,"tier":"dificil","icone":"🐲","titulo":"A Chave é o que Carregam","intro":"Ao fundo, escamas azuis tilintam. O frio do sonho cheira a ozônio.","etapas":[{"texto":"Uma carta de escamas, escrita com uma chave que se repete. A chave é aquilo que vocês carregam. Qual cor espera?","dicas":["É uma cifra de chave repetida (Vigenère). Ela vai somando as letras da chave às da mensagem.","A chave tem três letras e é o objeto de latão.","Chave: OVO. Subtraia: O vale 14, V vale 21, O vale 14 (A=0)."],"hashes":["13ab0jc2tgg"],"tipo":"texto","cifra":"C VNIG SGKSFV BC AWA"},{"texto":"O sonho arrepia. Qual o nome do dragão azul que Eldemere teme?","dicas":["Começa com A e termina em K.","Eldemere não ousa dizer alto."],"hashes":["zja0zngcjk"],"tipo":"texto"}]}]};
+const SALT = DATA.salt;
+const cyrb53=(str,seed=0)=>{let h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;for(let i=0,ch;i<str.length;i++){ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}h1=Math.imul(h1^(h1>>>16),2246822507);h1^=Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507);h2^=Math.imul(h1^(h1>>>13),3266489909);return 4294967296*(2097151&h2)+(h1>>>0);};
+const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');
+const hs = (a,id) => cyrb53(norm(a)+'|'+id+'|'+SALT).toString(36);
+const q = new URLSearchParams(location.search);
+const SESSAO = parseInt(q.get('s'),10) || DATA.sessao;
+let store = {};
+try{ store = JSON.parse(localStorage.getItem('sonhos')||'{}'); }catch(e){}
+const save = () => { try{ localStorage.setItem('sonhos', JSON.stringify(store)); }catch(e){} };
+const $ = id => document.getElementById(id);
+const app = $('app');
+const estrelas = n => '★'.repeat(n)+'☆'.repeat(4-n);
+
+function home(){
+  const L = DATA.sonhos.filter(d=>d.sessao<=SESSAO);
+  app.innerHTML = '<h1>🌙 Sonhos do Ovo</h1><p class="sub">Quando o Ovo de Latão dorme perto de vocês, ele sonha. Resolva os sonhos e leve o código ao Mestre.</p>'+
+    L.map(d=>'<div class="card dream" data-id="'+d.id+'"><div class="ico">'+d.icone+'</div><div><div class="t">'+d.titulo+(store[d.id]&&store[d.id].codigo?' <span class="ok">✓</span>':'')+'</div><div class="m">Sessão '+d.sessao+' · '+estrelas(d.dif)+'</div></div></div>').join('')+
+    '<p><small>Cada sonho dá um código único. Não adianta resolver de novo: o código é sempre o mesmo.</small></p>';
+  app.querySelectorAll('.dream').forEach(el=>el.onclick=()=>abre(+el.dataset.id));
+}
+
+function abre(id){
+  const d = DATA.sonhos.find(x=>x.id===id);
+  store[id] = store[id] || {fase:0};
+  const st = store[id];
+  const feito = !!st.codigo;
+  let h = '<div class="back"><button class="ghost" id="voltar">← Sonhos</button></div><h2>'+d.icone+' '+d.titulo+'</h2><div class="card">'+d.intro+'</div>';
+  if(feito){ h += codigoHtml(st.codigo); app.innerHTML = h; $('voltar').onclick=home; return; }
+  h += '<div id="stage"></div>';
+  app.innerHTML = h; $('voltar').onclick=home;
+  fase(d);
+}
+
+function codigoHtml(c){
+  return '<div class="card"><b class="ok">Sonho resolvido.</b> Mostre este código ao Mestre:<div class="code">'+c+'</div><small>Ele guarda a sua recompensa. Não o perca.</small></div>';
+}
+
+function fase(d){
+  const st = store[d.id];
+  const i = st.fase;
+  const el = $('stage');
+  if(i >= d.etapas.length){
+    const r = Math.random().toString(36).slice(2,6).toUpperCase();
+    const ck = cyrb53('S'+d.id+r+SALT).toString(36).slice(-3).toUpperCase();
+    st.codigo = 'S'+d.id+'-'+r+'-'+ck; save();
+    el.innerHTML = codigoHtml(st.codigo); return;
+  }
+  const e = d.etapas[i];
+  let h = '<div class="card stage"><small>Etapa '+(i+1)+' de '+d.etapas.length+'</small><p>'+e.texto+'</p>';
+  if(e.cifra) h += '<div class="cifra">'+e.cifra+'</div>';
+  if(e.tipo==='texto'){
+    h += '<input type="text" id="resp" autocomplete="off" placeholder="Sua resposta"><div class="row"><button class="pri" id="ok">Responder</button><button id="dica">Pedir dica</button></div>';
+  } else {
+    h += '<div class="slots" id="slots"></div><div class="chips" id="chips"></div><div class="row"><button class="pri" id="ok">Confirmar</button><button id="desf">Desfazer</button><button id="limp">Limpar</button><button id="dica">Pedir dica</button></div>';
+  }
+  h += '<div class="msg" id="msg"></div><div id="dicas"></div></div>';
+  el.innerHTML = h;
+  let usadas = 0;
+  $('dica').onclick = () => {
+    if(usadas < e.dicas.length){ usadas++; }
+    $('dicas').innerHTML = e.dicas.slice(0,usadas).map(t=>'<div class="hint">'+t+'</div>').join('') + (usadas>=e.dicas.length?'<small>Sem mais dicas.</small>':'');
+  };
+  const confere = resp => {
+    if(e.hashes.includes(hs(resp, d.id+'-'+i))){
+      $('msg').innerHTML = '<span class="ok">✓ O sonho cede.</span>';
+      st.fase = i+1; save(); setTimeout(()=>fase(d), 700);
+    } else { $('msg').innerHTML = '<span class="bad">O sonho não se abre. Tente de novo.</span>'; }
+  };
+  if(e.tipo==='texto'){
+    $('ok').onclick = () => confere($('resp').value);
+    $('resp').onkeydown = ev => { if(ev.key==='Enter') $('ok').click(); };
+  } else {
+    let esc = [];
+    const itens = e.itens.map(x=>x);
+    const ordem = itens.slice().sort((a,b)=>cyrb53(a.id+d.id)-cyrb53(b.id+d.id));
+    const draw = () => {
+      $('slots').innerHTML = itens.map((_,k)=>{ const x = esc[k] && itens.find(y=>y.id===esc[k]); return '<div class="slot'+(x?' f':'')+'">'+(k+1)+'. '+(x?(x.sig?'<span class="sig">'+x.sig+'</span> ':'')+x.nome:'…')+'</div>'; }).join('');
+      $('chips').innerHTML = ordem.map(x=>'<button class="chip'+(esc.includes(x.id)?' on':'')+'" data-i="'+x.id+'">'+(x.sig?'<span class="sig">'+x.sig+'</span> ':'')+x.nome+'</button>').join('');
+      $('chips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{ if(esc.length<itens.length){ esc.push(b.dataset.i); draw(); } });
+    };
+    draw();
+    $('desf').onclick = () => { esc.pop(); draw(); };
+    $('limp').onclick = () => { esc = []; draw(); };
+    $('ok').onclick = () => { if(esc.length<itens.length){ $('msg').innerHTML='<span class="bad">Preencha todas as posições.</span>'; return; } confere(esc.join('-')); };
+  }
+}
+home();
+</script>
+</body>
+</html>
